@@ -124,10 +124,12 @@ export default function FeedbackModal({
         turnstileWidget.current = window.turnstile.render(
           turnstileContainer.current,
           {
-            callback: token => setTurnstileToken(token),
+            callback: token => {
+              setTurnstileToken(token);
+              setError(undefined);
+            },
             'error-callback': () => {
               setTurnstileToken('');
-              setError(strings.feedback_turnstile_error);
             },
             'expired-callback': () => setTurnstileToken(''),
             sitekey: turnstileSiteKey,
