@@ -48,6 +48,7 @@ export const sk: Translation = {
   feedback_sending: 'Sending...',
   feedback_submit: 'Send update request',
   feedback_success: 'Thank you. Your update request has been sent.',
+  feedback_turnstile_error: 'Please complete the security check.',
   feedback: 'Aktualizovať informácie o stretnutí',
   get_directions: 'Zobraziť trasu',
   in_progress_single: '1 stretnutie práve prebieha',

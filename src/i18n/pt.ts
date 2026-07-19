@@ -48,6 +48,7 @@ export const pt: Translation = {
   feedback_sending: 'Sending...',
   feedback_submit: 'Send update request',
   feedback_success: 'Thank you. Your update request has been sent.',
+  feedback_turnstile_error: 'Please complete the security check.',
   feedback: 'Atualizar Informações da Reunião',
   get_directions: 'Obter Direcções',
   in_progress_single: '1 reunião em progresso',

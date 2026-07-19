@@ -4,6 +4,61 @@ import { buttonCss, formControlCss } from '../styles';
 import { useSettings } from '../hooks';
 import type { Meeting } from '../types';
 
+type TurnstileOptions = {
+  callback: (token: string) => void;
+  'error-callback': () => void;
+  'expired-callback': () => void;
+  sitekey: string;
+  theme: 'auto';
+};
+
+declare global {
+  interface Window {
+    turnstile?: {
+      remove: (widgetId: string) => void;
+      render: (container: HTMLElement, options: TurnstileOptions) => string;
+      reset: (widgetId: string) => void;
+    };
+  }
+}
+
+let turnstileScriptPromise: Promise<void> | undefined;
+
+function loadTurnstileScript() {
+  if (window.turnstile) {
+    return Promise.resolve();
+  }
+
+  if (turnstileScriptPromise) {
+    return turnstileScriptPromise;
+  }
+
+  turnstileScriptPromise = new Promise((resolve, reject) => {
+    const existing = document.getElementById('cf-turnstile-script');
+    if (existing) {
+      existing.addEventListener('load', () => resolve(), { once: true });
+      existing.addEventListener('error', () => reject(new Error()), {
+        once: true,
+      });
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.id = 'cf-turnstile-script';
+    script.async = true;
+    script.defer = true;
+    script.src =
+      'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    script.addEventListener('load', () => resolve(), { once: true });
+    script.addEventListener('error', () => reject(new Error()), {
+      once: true,
+    });
+    document.head.appendChild(script);
+  });
+
+  return turnstileScriptPromise;
+}
+
 export default function FeedbackModal({
   meeting,
   meetingTime,
@@ -20,11 +75,15 @@ export default function FeedbackModal({
   const [loadedAt, setLoadedAt] = useState(Math.floor(Date.now() / 1000));
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
   const firstInput = useRef<HTMLInputElement>(null);
+  const turnstileContainer = useRef<HTMLDivElement>(null);
+  const turnstileWidget = useRef<string>();
 
   const publicUrl = settings.feedback_public_origin
     ? `${settings.feedback_public_origin.replace(/\/$/, '')}/${meeting.slug}`
     : (meeting.url ?? window.location.href);
+  const turnstileSiteKey = settings.feedback_form?.turnstile_site_key;
 
   useEffect(() => {
     if (!open) {
@@ -35,6 +94,7 @@ export default function FeedbackModal({
     setLoadedAt(Math.floor(Date.now() / 1000));
     setSending(false);
     setSent(false);
+    setTurnstileToken('');
     setTimeout(() => firstInput.current?.focus(), 0);
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -47,6 +107,45 @@ export default function FeedbackModal({
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [onClose, open]);
 
+  useEffect(() => {
+    if (!open || !turnstileSiteKey) {
+      return;
+    }
+
+    let cancelled = false;
+    setTurnstileToken('');
+
+    loadTurnstileScript()
+      .then(() => {
+        if (cancelled || !turnstileContainer.current || !window.turnstile) {
+          return;
+        }
+
+        turnstileWidget.current = window.turnstile.render(
+          turnstileContainer.current,
+          {
+            callback: token => setTurnstileToken(token),
+            'error-callback': () => {
+              setTurnstileToken('');
+              setError(strings.feedback_turnstile_error);
+            },
+            'expired-callback': () => setTurnstileToken(''),
+            sitekey: turnstileSiteKey,
+            theme: 'auto',
+          }
+        );
+      })
+      .catch(() => setError(strings.feedback_turnstile_error));
+
+    return () => {
+      cancelled = true;
+      if (turnstileWidget.current && window.turnstile) {
+        window.turnstile.remove(turnstileWidget.current);
+        turnstileWidget.current = undefined;
+      }
+    };
+  }, [open, strings.feedback_turnstile_error, turnstileSiteKey]);
+
   if (!open || !settings.feedback_form) {
     return null;
   }
@@ -56,9 +155,16 @@ export default function FeedbackModal({
     setError(undefined);
     setSending(true);
 
+    if (turnstileSiteKey && !turnstileToken) {
+      setError(strings.feedback_turnstile_error);
+      setSending(false);
+      return;
+    }
+
     const formData = new FormData(event.currentTarget);
     formData.set('action', settings.feedback_form.action);
     formData.set('nonce', settings.feedback_form.nonce);
+    formData.set('cf-turnstile-response', turnstileToken);
     formData.set('loaded_at', `${loadedAt}`);
     formData.set('meeting_slug', meeting.slug);
     formData.set('meeting_name', meeting.name);
@@ -80,6 +186,10 @@ export default function FeedbackModal({
       }
       setSent(true);
     } catch (error) {
+      if (turnstileWidget.current && window.turnstile) {
+        window.turnstile.reset(turnstileWidget.current);
+        setTurnstileToken('');
+      }
       setError(error instanceof Error ? error.message : strings.feedback_error);
     } finally {
       setSending(false);
@@ -203,11 +313,14 @@ export default function FeedbackModal({
               name="website"
               tabIndex={-1}
             />
+            {turnstileSiteKey && (
+              <div css={{ minHeight: '65px' }} ref={turnstileContainer} />
+            )}
             {error && <p css={{ color: 'var(--inactive)' }}>{error}</p>}
             <div css={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
               <button
                 css={[buttonCss, { flex: '1 1 12rem' }]}
-                disabled={sending}
+                disabled={sending || (!!turnstileSiteKey && !turnstileToken)}
                 type="submit"
               >
                 {sending ? strings.feedback_sending : strings.feedback_submit}

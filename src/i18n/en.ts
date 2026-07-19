@@ -49,6 +49,7 @@ export const en: Translation = {
   feedback_sending: 'Sending...',
   feedback_submit: 'Send update request',
   feedback_success: 'Thank you. Your update request has been sent.',
+  feedback_turnstile_error: 'Please complete the security check.',
   get_directions: 'Get Directions',
   in_progress_single: '1 meeting in progress',
   in_progress_multiple: '%count% meetings in progress',

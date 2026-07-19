@@ -48,6 +48,7 @@ export const sv: Translation = {
   feedback_sending: 'Sending...',
   feedback_submit: 'Send update request',
   feedback_success: 'Thank you. Your update request has been sent.',
+  feedback_turnstile_error: 'Please complete the security check.',
   feedback: 'Uppdatera Mötesinformation',
   get_directions: 'Få Vägbeskrivning',
   in_progress_single: '1 möte pågår',
