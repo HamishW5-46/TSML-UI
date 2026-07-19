@@ -37,6 +37,7 @@ interface TSMLReactConfig {
     action: string;
     endpoint: string;
     nonce: string;
+    turnstile_site_key?: string;
   };
   feedback_public_origin?: string;
   filters: Array<'region' | 'weekday' | 'time' | 'type'>;

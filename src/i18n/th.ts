@@ -51,6 +51,7 @@ export const th: Translation = {
   feedback_sending: 'Sending...',
   feedback_submit: 'Send update request',
   feedback_success: 'Thank you. Your update request has been sent.',
+  feedback_turnstile_error: 'Please complete the security check.',
   feedback: 'อัปเดตข้อมูลการประชุม',
   get_directions: 'ขอเส้นทาง',
   in_progress_single: 'กำลังประชุมอยู่ 1 รายการ',

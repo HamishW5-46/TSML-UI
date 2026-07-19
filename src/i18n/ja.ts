@@ -48,6 +48,7 @@ export const ja: Translation = {
   feedback_sending: 'Sending...',
   feedback_submit: 'Send update request',
   feedback_success: 'Thank you. Your update request has been sent.',
+  feedback_turnstile_error: 'Please complete the security check.',
   feedback: 'ミーティング情報の更新',
   get_directions: '行き方を調べる',
   in_progress_single: '1件のミーティングが進行中です',

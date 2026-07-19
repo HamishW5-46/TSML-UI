@@ -47,6 +47,7 @@ export interface Translation {
   feedback_sending: string;
   feedback_submit: string;
   feedback_success: string;
+  feedback_turnstile_error: string;
   get_directions: string;
   in_progress_single: string;
   in_progress_multiple: string;
