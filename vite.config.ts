@@ -14,6 +14,7 @@ export default defineConfig({
   publicDir: false, // Disable public folder copying to avoid conflicts
   build: {
     minify: 'terser',
+    sourcemap: true,
     outDir: 'public',
     chunkSizeWarningLimit: 700,
     emptyOutDir: false, // Don't clear public dir (contains HTML files)

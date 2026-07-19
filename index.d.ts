@@ -13,6 +13,10 @@ interface TSMLReactConfig {
   calendar_enabled: boolean;
   columns: string[];
   conference_providers: Record<string, string>;
+  custom_links?: Array<{
+    label: string;
+    url: string;
+  }>;
   defaults: {
     distance?: number;
     meeting?: string;
@@ -29,6 +33,12 @@ interface TSMLReactConfig {
   distance_unit: 'mi' | 'km';
   duration: number;
   feedback_emails: string[];
+  feedback_form?: {
+    action: string;
+    endpoint: string;
+    nonce: string;
+  };
+  feedback_public_origin?: string;
   filters: Array<'region' | 'weekday' | 'time' | 'type'>;
   flags?: string[];
   in_person_types: string[];

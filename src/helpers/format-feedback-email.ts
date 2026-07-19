@@ -16,7 +16,10 @@ export function formatFeedbackEmail({
   strings: Translation;
 }) {
   // remove extra query params from meeting URL
-  const meetingUrl = formatUrl({ meeting: meeting.slug }, settings, true);
+  let meetingUrl = formatUrl({ meeting: meeting.slug }, settings, true);
+  if (settings.feedback_public_origin) {
+    meetingUrl = `${settings.feedback_public_origin.replace(/\/$/, '')}/${meeting.slug}`;
+  }
 
   // build message
   const lines = [

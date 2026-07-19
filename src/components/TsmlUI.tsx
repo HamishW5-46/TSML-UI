@@ -13,8 +13,9 @@ import {
   useData,
   useInput,
   useLocation,
+  useSettings,
 } from '../hooks';
-import { globalCss } from '../styles';
+import { buttonCss, globalCss } from '../styles';
 
 import { Alert, Controls, DynamicHeight, Loading, Map, Table, Title } from './';
 
@@ -64,13 +65,49 @@ export default function TsmlUI({
 export const Index = () => {
   const { waitingForData } = useData();
   const { input } = useInput();
+  const { settings } = useSettings();
   const { waitingForLocation } = useLocation();
+  const customLinks = settings.custom_links?.filter(
+    ({ label, url }) => label && url
+  );
+
   return waitingForData ? (
     <Loading />
   ) : (
     <>
       <Title />
       <Controls />
+      {!!customLinks?.length && (
+        <nav
+          aria-label="Meeting list downloads"
+          className="tsml-ui-custom-links"
+          css={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '0.5rem',
+            marginBottom: '1rem',
+          }}
+        >
+          {customLinks.map(({ label, url }) => (
+            <a
+              css={[
+                buttonCss,
+                {
+                  flex: '1 1 18rem',
+                  minWidth: 'min(100%, 18rem)',
+                  width: 'auto',
+                },
+              ]}
+              href={url}
+              key={url}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {label}
+            </a>
+          ))}
+        </nav>
+      )}
       {waitingForLocation ? (
         <Loading />
       ) : (

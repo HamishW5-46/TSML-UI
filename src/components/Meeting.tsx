@@ -20,6 +20,7 @@ import {
 } from '../styles';
 
 import Button from './Button';
+import FeedbackModal from './FeedbackModal';
 import CalendarButton from './CalendarButton';
 import Icon, { icons } from './Icon';
 import Link from './Link';
@@ -40,6 +41,7 @@ export default function Meeting() {
 
   // open types
   const [define, setDefine] = useState<string | undefined>();
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   // scroll to top when you navigate to this page
   useEffect(() => {
@@ -110,9 +112,11 @@ export default function Meeting() {
       .filter(e => e);
   }
 
+  const feedbackFormEnabled =
+    !!settings.feedback_form && feedback_emails.length > 0;
   const feedback_url = meeting.feedback_url
     ? meeting.feedback_url
-    : feedback_emails.length
+    : !feedbackFormEnabled && feedback_emails.length
       ? formatFeedbackEmail({
           feedback_emails,
           meeting,
@@ -437,7 +441,10 @@ export default function Meeting() {
                   {formatWeekdays(groupWeekdays, meeting.slug)}
                 </div>
               )}
-            {(meeting.updated || feedback_url || meeting.entity) && (
+            {(meeting.updated ||
+              feedback_url ||
+              feedbackFormEnabled ||
+              meeting.entity) && (
               <div>
                 {meeting.entity && (
                   <>
@@ -468,13 +475,19 @@ export default function Meeting() {
                   </>
                 )}
 
-                {feedback_url && (
+                {feedback_url ? (
                   <Button
                     href={feedback_url}
                     icon="edit"
                     text={strings.feedback}
                   />
-                )}
+                ) : feedbackFormEnabled ? (
+                  <Button
+                    icon="edit"
+                    onClick={() => setFeedbackOpen(true)}
+                    text={strings.feedback}
+                  />
+                ) : null}
 
                 {meeting.updated && (
                   <p>{i18n(strings.updated, { updated: meeting.updated })}</p>
@@ -493,6 +506,14 @@ export default function Meeting() {
           {meeting.isInPerson && <Map />}
         </div>
       </div>
+      {feedbackFormEnabled && (
+        <FeedbackModal
+          meeting={meeting}
+          meetingTime={formatTime(meeting.start, meeting.end)}
+          onClose={() => setFeedbackOpen(false)}
+          open={feedbackOpen}
+        />
+      )}
     </div>
   );
 }

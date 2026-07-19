@@ -48,7 +48,10 @@ export const defaults: TSMLReactConfig = {
   distance_options: [1, 2, 5, 10, 15, 25, 50, 100],
   distance_unit: 'mi', // mi or km
   duration: 60,
+  custom_links: [],
   feedback_emails: [], // email addresses for update meeting info button
+  feedback_form: undefined,
+  feedback_public_origin: undefined,
   filters: ['region', 'weekday', 'time', 'type'],
   in_person_types: [
     'BA',

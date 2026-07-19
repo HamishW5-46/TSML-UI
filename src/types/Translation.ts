@@ -5,6 +5,8 @@ export interface Translation {
   back_to_meetings: string;
   calendar_ical: string;
   calendar_google: string;
+  cancel: string;
+  close: string;
   collapse: string;
   contact_email: string;
   contact_text: string;
@@ -36,6 +38,15 @@ export interface Translation {
   evening: string;
   expand: string;
   feedback: string;
+  feedback_email: string;
+  feedback_error: string;
+  feedback_form_title: string;
+  feedback_message: string;
+  feedback_name: string;
+  feedback_phone: string;
+  feedback_sending: string;
+  feedback_submit: string;
+  feedback_success: string;
   get_directions: string;
   in_progress_single: string;
   in_progress_multiple: string;

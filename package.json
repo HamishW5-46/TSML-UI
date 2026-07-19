@@ -16,7 +16,9 @@
     "preview": "vite preview",
     "serve": "serve public",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "build:plugin": "npm run build && node ../copy-tsml-ui-build.js",
+    "build:readable": "vite build --minify false --sourcemap false"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.2",

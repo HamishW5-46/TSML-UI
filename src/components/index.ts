@@ -2,6 +2,7 @@ export { default as Alert } from './Alert';
 export { default as Button } from './Button';
 export { default as Controls } from './Controls';
 export { default as Dropdown } from './Dropdown';
+export { default as FeedbackModal } from './FeedbackModal';
 export { default as DynamicHeight } from './DynamicHeight';
 export { default as Icon } from './Icon';
 export { default as Link } from './Link';
